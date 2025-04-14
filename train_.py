@@ -81,7 +81,7 @@ if __name__ == "__main__":
         # Train the model
         model = main(data_dir)
     
-    print("\n\n ==========Model classification==========")
+    print("\n\n ==========Model classification===========")
     if model_classify:
         model = load(os.path.join(base_path, "models", "svm_model.joblib"))
         classify_audio(model, f"{data_dir}/normal/normal_001.wav", ['normal', 'early_fault', 'failure'])
