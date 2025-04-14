@@ -42,10 +42,10 @@ def evaluate_model(model, X_test, y_test, class_names):
                      ha="center", va="center",
                      color="white" if cm[i, j] > thresh else "black")
     
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.show()
+    # plt.tight_layout()
+    # plt.ylabel('True label')
+    # plt.xlabel('Predicted label')
+    # plt.show()
     
     # Calculate and return accuracy
     accuracy = np.sum(y_pred == y_test) / len(y_test)

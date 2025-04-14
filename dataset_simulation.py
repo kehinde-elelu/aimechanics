@@ -3,7 +3,8 @@ import librosa
 import os
 import soundfile as sf
 import matplotlib.pyplot as plt
-from scipy import signal
+# from scipy import signal
+from scipy.signal.windows import gaussian
 import random
 
 def create_directory(directory):
@@ -83,7 +84,7 @@ def simulate_early_fault_sound(duration=3.0, sr=22050):
         pulse_time = random.uniform(0, duration)
         pulse_pos = int(pulse_time * sr)
         if pulse_pos + pulse_width < len(audio):
-            pulse_shape = signal.gaussian(pulse_width, std=pulse_width/6)
+            pulse_shape = gaussian(pulse_width, std=pulse_width/6)
             pulse_strength = random.uniform(0.05, 0.15)
             audio[pulse_pos:pulse_pos+pulse_width] += pulse_shape * pulse_strength
     
@@ -139,7 +140,7 @@ def simulate_failure_sound(duration=3.0, sr=22050):
         pulse_time = random.uniform(0, duration)
         pulse_pos = int(pulse_time * sr)
         if pulse_pos + pulse_width < len(audio):
-            pulse_shape = signal.gaussian(pulse_width, std=pulse_width/5)
+            pulse_shape = gaussian(pulse_width, std=pulse_width/5)
             pulse_strength = random.uniform(0.2, 0.5)
             audio[pulse_pos:pulse_pos+pulse_width] += pulse_shape * pulse_strength
     

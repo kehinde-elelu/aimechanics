@@ -37,21 +37,21 @@ def classify_audio(model, audio_file, class_names):
         for i, class_name in enumerate(class_names):
             print(f"  {class_name}: {probabilities[i]:.4f}")
         
-        # Visualize the audio
-        plt.figure(figsize=(12, 6))
+        # # Visualize the audio
+        # plt.figure(figsize=(12, 6))
         
-        plt.subplot(2, 1, 1)
-        plt.title('Waveform')
-        librosa.display.waveshow(audio, sr=sr)
+        # plt.subplot(2, 1, 1)
+        # plt.title('Waveform')
+        # librosa.display.waveshow(audio, sr=sr)
         
-        plt.subplot(2, 1, 2)
-        plt.title('Spectrogram')
-        D = librosa.amplitude_to_db(np.abs(librosa.stft(audio)), ref=np.max)
-        librosa.display.specshow(D, sr=sr, x_axis='time', y_axis='log')
-        plt.colorbar(format='%+2.0f dB')
+        # plt.subplot(2, 1, 2)
+        # plt.title('Spectrogram')
+        # D = librosa.amplitude_to_db(np.abs(librosa.stft(audio)), ref=np.max)
+        # librosa.display.specshow(D, sr=sr, x_axis='time', y_axis='log')
+        # plt.colorbar(format='%+2.0f dB')
         
-        plt.tight_layout()
-        plt.show()
+        # plt.tight_layout()
+        # plt.show()
         
     except Exception as e:
         print(f"Error classifying audio: {e}")

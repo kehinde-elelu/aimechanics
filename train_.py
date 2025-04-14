@@ -10,6 +10,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 import os
+from sklearn import svm
+from joblib import dump, load
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -19,6 +21,8 @@ from feature_extraction import extract_features
 from svm_model import build_svm_model
 from evaluation import evaluate_model
 from classification import classify_audio
+
+base_path = "/Users/kehindeelelu/Documents/aimechanics/dataset/"
 
 # 6. Main function to run the entire pipeline
 def main(data_dir, visualize=True):
@@ -55,6 +59,12 @@ def main(data_dir, visualize=True):
     # 6. Evaluate the model
     accuracy = evaluate_model(model, X_test, y_test, class_names)
     print(f"\nOverall accuracy: {accuracy:.4f}")
+
+    # Save the model
+    save_folder = os.path.join(base_path, "models")
+    os.makedirs(save_folder, exist_ok=True)
+    if model:
+        dump(model, os.path.join(save_folder, "svm_model.joblib"))
     
     return model
 
@@ -62,13 +72,16 @@ def main(data_dir, visualize=True):
 # Usage example
 if __name__ == "__main__":
     # Replace with your data directory
-    data_dir = "path/to/equipment_sound_data/"
     model_train = True
-    model_classify = False 
+    model_classify = True 
+    data_dir = os.path.join(base_path, "equipment_sound_dataset")
     
+    print("\n\n ==========Model Training and Evaluation==========")
     if model_train:
         # Train the model
         model = main(data_dir)
     
+    print("\n\n ==========Model classification==========")
     if model_classify:
-        classify_audio(model, "path/to/new_audio.wav", ['normal', 'early_fault', 'failure'])
+        model = load(os.path.join(base_path, "models", "svm_model.joblib"))
+        classify_audio(model, f"{data_dir}/normal/normal_001.wav", ['normal', 'early_fault', 'failure'])

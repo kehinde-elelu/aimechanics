@@ -49,7 +49,7 @@ def load_audio_files(data_dir):
                     audio, sr = librosa.load(file_path, sr=None)
                     X.append((audio, sr))
                     y.append(classes[condition])
-                    print(f"Loaded {file_path}")
+                    # print(f"Loaded {file_path}")
                 except Exception as e:
                     print(f"Error loading {file_path}: {e}")
     
