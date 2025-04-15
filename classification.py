@@ -29,6 +29,11 @@ def classify_audio(model, audio_file, class_names):
         # Make prediction
         prediction = model.predict(features)[0]
         probabilities = model.predict_proba(features)[0]
+
+        result = {
+            'predicted_class': class_names[prediction],
+            'probabilities': probabilities
+        }
         
         # Print results
         print(f"\nClassification for {os.path.basename(audio_file)}:")
@@ -55,3 +60,5 @@ def classify_audio(model, audio_file, class_names):
         
     except Exception as e:
         print(f"Error classifying audio: {e}")
+
+    return result
