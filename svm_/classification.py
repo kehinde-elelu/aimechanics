@@ -13,7 +13,7 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 
-from feature_extraction import extract_features
+from svm_.feature_extraction import extract_features
 
 # 7. Function to classify new audio
 def classify_audio(model, audio_file, class_names):

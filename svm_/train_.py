@@ -15,12 +15,12 @@ from joblib import dump, load
 import warnings
 warnings.filterwarnings('ignore')
 
-from dataset_extraction import load_audio_files
-from visualize_spec import visualize_audio
-from feature_extraction import extract_features
-from svm_model import build_svm_model
-from evaluation import evaluate_model
-from classification import classify_audio
+from svm_.dataset_extraction import load_audio_files
+from aimechanics.svm_.visualize_spec import visualize_audio
+from svm_.feature_extraction import extract_features
+from svm_.svm_model import build_svm_model
+from svm_.evaluation import evaluate_model
+from svm_.classification import classify_audio
 
 base_path = "/Users/kehindeelelu/Documents/aimechanics/dataset/"
 
