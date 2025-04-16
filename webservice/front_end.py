@@ -10,8 +10,7 @@ from datetime import datetime
 
 # Define the server URL
 url = "http://127.0.0.1:8000/"
-
-# Define the folder to save audio files
+color = {'normal': 'Green', 'early_fault':'Yellow', 'failure':'Red'}
 audio_folder = "/Users/kehindeelelu/Documents/aimechanics/dataset/recorded_audio"
 
 # Record audio from the microphone
@@ -22,10 +21,10 @@ def record_audio(duration=5, sample_rate=44100):
     print("Recording complete.")
     return audio_data, sample_rate
 
-# Save the recorded audio to a specific folder
-def save_audio_to_folder(audio_data, sample_rate, folder, filename="recorded_audio.wav"):
-    os.makedirs(folder, exist_ok=True)
-    file_path = os.path.join(folder, filename)
+# Save the recorded audio to a specific audio_folder
+def save_audio_to_folder(audio_data, sample_rate, audio_folder, filename="recorded_audio.wav"):
+    os.makedirs(audio_folder, exist_ok=True)
+    file_path = os.path.join(audio_folder, filename)
     write(file_path, sample_rate, audio_data)
     print(f"Audio saved to {file_path}")
     return file_path
@@ -56,7 +55,7 @@ if __name__ == "__main__":
         print("Audio data shape:", audio_data.shape, sample_rate)
 
         if mode_extract == "file_path":
-            # Save the audio to the specified folder with a unique filename
+            # Save the audio to the specified audio_folder with a unique filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"audio_{timestamp}.wav"
             audio_file_path = save_audio_to_folder(audio_data, sample_rate, audio_folder, filename)
@@ -83,11 +82,10 @@ if __name__ == "__main__":
                 print("Predicted class:", response_data.get("prediction", {}).get("predicted_class"))  
                 # =========> Return the API response <========= # 
 
-                # predict the color of buld based on the predicted class 
-                # {'normal': 'green, 'early_fault':'yellow', 'failure':'red}    
-                color = {'normal': 'Green', 'early_fault':'Yellow', 'failure':'Red'}
+                # =========> Extract the color based on the predicted class  <========= #
                 print("Predicted class color:", color.get(response_data.get("prediction", {}).get("predicted_class")))
 
+                # =========> Call the ECU/ESP32 for changing of bulb <========= #
                 # predicted_color = color.get(response_data.get("prediction", {}).get("predicted_class"))
                 # if predicted_color:
                 #     send_color_to_bulb(predicted_color)

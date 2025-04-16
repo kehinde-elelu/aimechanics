@@ -1,3 +1,8 @@
+'''
+# run the server using uvicorn
+uvicorn backend.deploy_server:app --reload
+'''
+
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pydub import AudioSegment
@@ -9,7 +14,7 @@ import tempfile
 from scipy.io.wavfile import write
 from svm_.classification import classify_audio
 
-base_path = "/Users/kehindeelelu/Documents/aimechanics/dataset/"
+base_path = "/app/"
 data_dir = os.path.join(base_path, "equipment_sound_dataset")
 sample_rate = 44100  # Replace with the actual sample rate of your audio
 
@@ -54,11 +59,13 @@ async def predict(file: UploadFile = File(...)):
             temp_file_path = temp_file.name
             temp_file.write(await file.read())
 
+        # =========> Call the SVM Model for classification <========= #
         # Call classify_audio with the temporary file path
-        clas_result = classify_audio(model, temp_file_path, ['normal', 'early_fault', 'failure']) #pass the 
+        class_result = classify_audio(model, temp_file_path, ['normal', 'early_fault', 'failure']) 
+        # =========> Return the classification <================ # 
 
         # Convert NumPy array to list for JSON serialization
-        clas_result['probabilities'] = clas_result['probabilities'].tolist()
+        class_result['probabilities'] = class_result['probabilities'].tolist()
 
         # write the temporary file to the f'{base_path}/dataset/recorded_audio/' directory
         audio_data = AudioSegment.from_file(temp_file_path).get_array_of_samples()
@@ -70,13 +77,14 @@ async def predict(file: UploadFile = File(...)):
         os.remove(temp_file_path)
 
         # Return the prediction result
-        return JSONResponse({"prediction": clas_result})
+        return JSONResponse({"prediction": class_result})
     except Exception as e:
         # Handle errors and return a 500 response
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
 '''
-# run the server using uvicorn
-uvicorn backend.deploy_server:app --reload
+    Docker Deployment
+    docker build -t backend .
+    docker run -d -p 8000:8000 backend
 '''
