@@ -9,9 +9,20 @@ import serial
 from datetime import datetime
 
 # Define the server URL
-url = "http://127.0.0.1:8000/"
+url = "http://127.0.0.1:8001/"
 color = {'normal': 'Green', 'early_fault':'Yellow', 'failure':'Red'}
 audio_folder = "/Users/kehindeelelu/Documents/aimechanics/dataset/recorded_audio"
+
+color = {
+    'normal': 'green',
+    'early_fault': 'yellow',  # optionally use another LED
+    'failure': 'red'
+}
+
+# Replace with your Particle device info
+PARTICLE_DEVICE_ID = 'e00fce687d5dac10819a7918'
+PARTICLE_ACCESS_TOKEN = 'd22576aded5b7474f866a23fadf4ded7f969b2fd'
+PARTICLE_FUNCTION = 'setColor'
 
 # Record audio from the microphone
 def record_audio(duration=5, sample_rate=44100):
@@ -29,15 +40,34 @@ def save_audio_to_folder(audio_data, sample_rate, audio_folder, filename="record
     print(f"Audio saved to {file_path}")
     return file_path
 
-# Send color to the bulb via serial communication
+# # Send color to the bulb via serial communication
+# def send_color_to_bulb(color):
+#     try:
+#         # Replace 'COM3' with the correct port for your microcontroller (e.g., '/dev/ttyUSB0' on Linux/Mac)
+#         with serial.Serial('/dev/ttyUSB0', 9600, timeout=1) as ser:
+#             ser.write((color + '\n').encode())  # Send color as a string
+#             print(f"Sent color to bulb: {color}")
+#     except Exception as e:
+#         print(f"Error sending color to bulb: {e}")
+
+
 def send_color_to_bulb(color):
     try:
-        # Replace 'COM3' with the correct port for your microcontroller (e.g., '/dev/ttyUSB0' on Linux/Mac)
-        with serial.Serial('/dev/ttyUSB0', 9600, timeout=1) as ser:
-            ser.write((color + '\n').encode())  # Send color as a string
-            print(f"Sent color to bulb: {color}")
+        url = f"https://api.particle.io/v1/devices/{PARTICLE_DEVICE_ID}/{PARTICLE_FUNCTION}"
+        print(url)
+        data = {
+            'arg': color,
+            'access_token': PARTICLE_ACCESS_TOKEN
+        }
+        response = requests.post(url, data=data)
+        print(response.status_code)
+        print(response.text)
+        if response.status_code == 200:
+            print(f"Bulb color set to: {color}")
+        else:
+            print("Failed to send color to bulb:", response.text)
     except Exception as e:
-        print(f"Error sending color to bulb: {e}")
+        print("Error sending color to bulb:", e)
 
 
 # Main logic
@@ -86,9 +116,10 @@ if __name__ == "__main__":
                 print("Predicted class color:", color.get(response_data.get("prediction", {}).get("predicted_class")))
 
                 # =========> Call the ECU/ESP32 for changing of bulb <========= #
-                # predicted_color = color.get(response_data.get("prediction", {}).get("predicted_class"))
-                # if predicted_color:
-                #     send_color_to_bulb(predicted_color)
+                predicted_color = color.get(response_data.get("prediction", {}).get("predicted_class"))
+                print(predicted_color)
+                if predicted_color:
+                    send_color_to_bulb(predicted_color)
 
     ############# End of Main Logic #############
     except Exception as e:
