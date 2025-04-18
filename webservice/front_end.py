@@ -118,8 +118,8 @@ if __name__ == "__main__":
                 # =========> Call the ECU/ESP32 for changing of bulb <========= #
                 predicted_color = color.get(response_data.get("prediction", {}).get("predicted_class"))
                 print(predicted_color)
-                if predicted_color:
-                    send_color_to_bulb(predicted_color)
+                # if predicted_color:
+                #     send_color_to_bulb(predicted_color)
 
     ############# End of Main Logic #############
     except Exception as e:

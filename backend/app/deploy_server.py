@@ -12,11 +12,45 @@ import io
 import os
 import tempfile
 from scipy.io.wavfile import write
+import requests
 from svm_.classification import classify_audio
 
 base_path = "/app/"
 data_dir = os.path.join(base_path, "equipment_sound_dataset")
 sample_rate = 44100  # Replace with the actual sample rate of your audio
+
+
+##############################################
+color = {
+    'normal': 'green',
+    'early_fault': 'yellow',  # optionally use another LED
+    'failure': 'red'
+}
+
+# Replace with your Particle device info
+PARTICLE_DEVICE_ID = 'e00fce687d5dac10819a7918'
+PARTICLE_ACCESS_TOKEN = 'd22576aded5b7474f866a23fadf4ded7f969b2fd'
+PARTICLE_FUNCTION = 'setColor'
+
+def send_color_to_bulb(color):
+    try:
+        url = f"https://api.particle.io/v1/devices/{PARTICLE_DEVICE_ID}/{PARTICLE_FUNCTION}"
+        print(url)
+        data = {
+            'arg': color,
+            'access_token': PARTICLE_ACCESS_TOKEN
+        }
+        response = requests.post(url, data=data)
+        print(response.status_code)
+        print(response.text)
+        if response.status_code == 200:
+            print(f"Bulb color set to: {color}")
+        else:
+            print("Failed to send color to bulb:", response.text)
+    except Exception as e:
+        print("Error sending color to bulb:", e)
+##############################################
+
 
 app = FastAPI()
 model = load(os.path.join(base_path, "models", "svm_model.joblib"))
@@ -75,6 +109,14 @@ async def predict(file: UploadFile = File(...)):
 
         # Clean up the temporary file
         os.remove(temp_file_path)
+
+        predicted_class = class_result['predicted_class']
+        predicted_color = {
+            'normal': 'green',
+            'early_fault': 'yellow',
+            'failure': 'red'
+        }.get(predicted_class)
+        send_color_to_bulb(predicted_color)
 
         # Return the prediction result
         return JSONResponse({"prediction": class_result})
